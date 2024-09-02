@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'tailwindcss/tailwind.css';
+
+body {
+  font-family: 'Helvetica', sans-serif;
+}
+
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
