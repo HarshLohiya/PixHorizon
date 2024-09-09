@@ -3,11 +3,16 @@
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { FaBars, FaTimes, FaShoppingCart } from "react-icons/fa";
+import { useSession, signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function Header() {
   const [isSticky, setIsSticky] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +28,23 @@ export default function Header() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (session) {
+        try {
+          const res = await fetch("/api/cart"); // Fetch cart items
+          if (!res.ok) throw new Error("Failed to fetch cart items.");
+          const data = await res.json();
+          setCartCount(data.length);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    fetchCartCount();
+  }, [session]);
 
   const activeLink = "text-green-500 font-semibold";
   const inactiveLink = "text-black hover:text-green-500 font-semibold";
@@ -160,13 +182,86 @@ export default function Header() {
 
         {/* Login, Cart, and Mobile Menu Button */}
         <div className="flex items-center space-x-4">
-          <a href="/login" className="text-gray-700 hover:text-red-500">
-            Log In
-          </a>
-          <button className="flex items-center text-gray-700 hover:text-red-500">
-            <FaShoppingCart size={20} />
-            <span className="ml-1">(0)</span>
-          </button>
+          {!session ? (
+            <>
+              <a href="/signup" className="text-gray-700 hover:text-red-500">
+                Sign Up
+              </a>
+              <a href="/login" className="text-gray-700 hover:text-red-500">
+                Log In
+              </a>
+            </>
+          ) : (
+            <>
+              <span className="text-gray-700">Hi, {session.user.username}</span>
+
+              {/* User Avatar for Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowProfileMenu(!showProfileMenu)}
+                  className="focus:outline-none flex items-center space-x-2"
+                >
+                  <img
+                    src={session.user.image || "/default-avatar.png"}
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full border border-gray-400"
+                  />
+                </button>
+
+                {showProfileMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-orange-100 rounded-md shadow-lg py-2">
+                    <a
+                      href="/profile"
+                      className={
+                        pathname.includes("/profile")
+                          ? activeSubLink
+                          : inactiveSubLink
+                      }
+                    >
+                      Profile Details
+                    </a>
+                    <a
+                      href="/upload"
+                      className={
+                        pathname.includes("/upload")
+                          ? activeSubLink
+                          : inactiveSubLink
+                      }
+                    >
+                      Upload Image
+                    </a>
+                    <a
+                      href="/orders"
+                      className={
+                        pathname.includes("/orders")
+                          ? activeSubLink
+                          : inactiveSubLink
+                      }
+                    >
+                      My Orders
+                    </a>
+                    <button
+                      onClick={() => signOut()}
+                      className="block w-full text-left px-4 py-2 text-gray-700 hover:text-red-500"
+                    >
+                      Log Out
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Cart Button */}
+              <Link
+                href="/cart"
+                className="flex items-center text-gray-700 hover:text-red-500"
+              >
+                <FaShoppingCart size={20} />
+                <span className="ml-1">({cartCount})</span>
+              </Link>
+            </>
+          )}
+
+          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={toggleMobileMenu}

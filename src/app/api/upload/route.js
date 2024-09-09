@@ -1,5 +1,6 @@
 import dbConnect from "@/lib/dbConnect";
 import Image from "@/models/Image";
+import User from "@/models/User";
 import { NextResponse } from "next/server";
 import ImageKit from "imagekit";
 import sharp from "sharp"; // Import sharp for image processing
@@ -10,11 +11,11 @@ const imageKit = new ImageKit({
   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
 });
 
-export const config = {
-  api: {
-    bodyParser: false, // Disable the default bodyParser to handle file uploads
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false, // Disable the default bodyParser to handle file uploads
+//   },
+// };
 
 export async function POST(request) {
   try {
@@ -24,9 +25,15 @@ export async function POST(request) {
     const file = data.get("file");
     const title = data.get("title");
     const category = data.get("category");
+    const userEmail = data.get("userEmail")
 
     if (!file) {
       throw new Error("No file uploaded");
+    }
+
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      throw new Error("User not found");
     }
 
     // Convert file to buffer
@@ -61,6 +68,8 @@ export async function POST(request) {
       width: uploadResponse.width, // Assuming ImageKit.io provides width
       height: uploadResponse.height, // Assuming ImageKit.io provides height
       like: 0,
+      price: 25,
+      user: user._id,
     });
 
     return NextResponse.json(

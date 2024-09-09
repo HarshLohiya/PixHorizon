@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="bg-black text-white pt-1 pb-8">
       <div className="text-center">
-        <p className="text-sm">© 2021 by Shashi Lohiya</p>
+        <p className="text-sm">© 2024 by Harsh Lohiya</p>
       </div>
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">

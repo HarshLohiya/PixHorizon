@@ -1,9 +1,15 @@
 "use client";
 
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function Upload() {
+  const { data: session, status } = useSession();
+
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
@@ -24,10 +30,20 @@ export default function Upload() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!file) {
+      setMessage("Please select an image to upload.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("title", title);
     formData.append("category", category);
+
+    // Include user info (e.g., email) to associate the image with the user
+    if (session?.user?.email) {
+      formData.append("userEmail", session.user.email); // Adjust based on your session object
+    }
 
     try {
       const response = await fetch("/api/upload", {
@@ -48,8 +64,28 @@ export default function Upload() {
     }
   };
 
+  if (status === "loading") {
+    return <p>Loading...</p>; // Show loading while session is being fetched
+  }
+
+  if (!session) {
+    return (
+      <div className="min-h-screen flex flex-col justify-between bg-green-200">
+        <Header />
+        <p className="mx-auto text-lg text-gray-700">
+          Please{" "}
+          <Link href="/login" className="text-blue-600 underline">
+            log in
+          </Link>{" "}
+          to upload the images.
+        </p>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-green-200 h-screen">
+    <div className="bg-green-200 flex flex-col justify-between min-h-screen">
       <Header />
       <div className="p-8 container mx-auto">
         <h1 className="text-2xl font-bold mb-4">Upload Image</h1>
@@ -74,7 +110,9 @@ export default function Upload() {
             required={true}
             className="block mb-4 p-2 border border-gray-300 rounded text-black"
           >
-            <option value="" disabled>Choose a category...</option>
+            <option value="" disabled>
+              Choose a category...
+            </option>
             <option value="birds">Birds</option>
             <option value="wildlife">Wildlife</option>
             <option value="landscape">Landscape</option>
@@ -91,6 +129,7 @@ export default function Upload() {
         </form>
         {message && <p className="mt-4">{message}</p>}
       </div>
+      <Footer />
     </div>
   );
 }

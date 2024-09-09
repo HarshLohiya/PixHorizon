@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import User from "@/models/User";
 import dbConnect from "@/lib/dbConnect";
 
-const handler = NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -27,7 +27,7 @@ const handler = NextAuth({
           throw new Error("Invalid password");
         }
 
-        return { id: user._id, name: user.name, email: user.email };
+        return { id: user._id, username: user.username, email: user.email };
       },
     }),
   ],
@@ -42,18 +42,20 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.name = user.name; // Add user's name to the token
+        token.username = user.username; // Add user's name to the token
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
-      session.user.name = token.name; // Add user's name to the session
+      session.user.username = token.username; // Add user's name to the session
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST };
 

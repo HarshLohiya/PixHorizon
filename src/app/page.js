@@ -32,7 +32,7 @@ export default function Home() {
       <Header />
 
       <section className="w-full h-[500px]">
-        {session ? `Welcome, ${session.user.email + ", " + session.user.name}!` : "Welcome!"}
+        {session ? `Welcome, ${session.user.email + ", " + session.user.username}!` : "Welcome!"}
         <button className="ml-16" onClick={signOut}>Log out</button>
         <Swiper
           style={{

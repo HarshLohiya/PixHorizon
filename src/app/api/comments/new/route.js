@@ -1,5 +1,3 @@
-// src/app/api/comments/new/route.js
-
 import dbConnect from "@/lib/dbConnect";
 import Comment from "@/models/Comment";
 

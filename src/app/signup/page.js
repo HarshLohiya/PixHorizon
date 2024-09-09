@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export default function SignUp() {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -16,7 +16,7 @@ export default function SignUp() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const user = { name, email, password };
+    const user = { username, email, password };
 
     try {
       const response = await fetch("/api/signup", {
@@ -49,16 +49,16 @@ export default function SignUp() {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="name" className="sr-only">
-                  Name
+                <label htmlFor="username" className="sr-only">
+                  Username
                 </label>
                 <input
-                  id="name"
-                  name="name"
+                  id="username"
+                  name="username"
                   type="text"
-                  placeholder="Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Userame"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="relative block w-full px-3 py-2 border border-gray-300 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm text-black"
                   required
                 />
