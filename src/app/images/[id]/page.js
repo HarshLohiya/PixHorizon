@@ -23,7 +23,6 @@ export default function ImagePage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [image, setImage] = useState(null);
-  const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [comments, setComments] = useState([]);
@@ -38,7 +37,7 @@ export default function ImagePage() {
         if (!res.ok) throw new Error("Failed to fetch image data.");
         const data = await res.json();
         setImage(data);
-        setLikes(data.likes);
+        setLikes(data.likes.length);
       } catch (error) {
         console.error(error);
       }
@@ -83,33 +82,6 @@ export default function ImagePage() {
       checkIfInCart(); // Check if the image is in the cart when the component mounts
     }
   }, [id, session]);
-
-  const handleLike = async () => {
-    const newLikedState = !liked;
-    setLiked(newLikedState);
-    setLikes(newLikedState ? likes + 1 : likes - 1);
-
-    try {
-      const res = await fetch(`/api/images/${id}/like`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          liked: newLikedState,
-        }),
-      });
-
-      if (!res.ok) {
-        // Revert state if request fails
-        setLiked(!newLikedState);
-        setLikes(newLikedState ? likes - 1 : likes + 1);
-        throw new Error("Failed to update like.");
-      }
-    } catch (error) {
-      console.error("Failed to update like:", error);
-    }
-  };
 
   const handleFullScreen = () => {
     const elem = document.getElementById("image-section");
@@ -193,7 +165,7 @@ export default function ImagePage() {
   return (
     <div className="bg-green-200">
       <Header />
-      <div className="flex flex-col lg:flex-row p-4 px-12 min-h-screen">
+      <div className="flex flex-col lg:flex-row min-h-screen py-4 px-4 md:px-10">
         {/* Image Section */}
         <div
           id="image-section"
@@ -218,16 +190,10 @@ export default function ImagePage() {
                   <ArrowLeftIcon className="w-6 h-6" />
                 </Link>
                 <div className="absolute top-4 right-4 flex space-x-2">
-                  <button
-                    className="p-2 rounded-full transition duration-300 hover:bg-gray-500"
-                    onClick={handleLike}
-                  >
-                    {liked ? (
-                      <HeartIconSolid className="w-5 h-5 text-red-600" />
-                    ) : (
-                      <HeartIconOutline className="w-5 h-5 text-white" />
-                    )}
-                  </button>
+                  <LikeButton
+                    imageId={image._id}
+                    initialLikes={image.likes.length || 0}
+                  />
                   <ShareButton imageUrl={`/images/${id}`} />
                 </div>
                 <div className="absolute bottom-4 right-4 flex space-x-4">
@@ -274,7 +240,9 @@ export default function ImagePage() {
                 onClick={handleAddToCart}
                 disabled={isAddingToCart || isInCart}
                 className={`px-4 py-2 font-semibold text-white rounded-lg transition ${
-                  isInCart ? "bg-gray-400 hover:bg-gray-600 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
+                  isInCart
+                    ? "bg-gray-400 hover:bg-gray-600 cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700"
                 }`}
               >
                 {isInCart ? "Already in Cart" : "Add to Cart"}
@@ -395,6 +363,77 @@ export default function ImagePage() {
         </div>
       </div>
       <Footer />
+    </div>
+  );
+}
+
+function LikeButton({ imageId, initialLikes }) {
+  const { data: session } = useSession();
+  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState(initialLikes);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await fetch(`/api/images/${imageId}/like`);
+        if (response.ok) {
+          const data = await response.json();
+          setLiked(data.liked);
+        } else {
+          console.error("Failed to fetch like status");
+        }
+      } catch (error) {
+        console.error("Error fetching like status:", error);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [imageId]);
+
+  const handleLike = async (e) => {
+    e.preventDefault();
+
+    if (!session) {
+      alert("You must be logged in to like this image.");
+      return;
+    }
+
+    const newLikedState = !liked;
+    const updatedLikes = newLikedState ? likes + 1 : likes - 1;
+
+    try {
+      const response = await fetch(`/api/images/${imageId}/like`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        setLiked(newLikedState);
+        setLikes(updatedLikes);
+      } else {
+        console.error("Failed to update likes");
+      }
+    } catch (error) {
+      console.error("Error updating likes:", error);
+    }
+  };
+
+  return (
+    <div className="flex items-center space-x-0.5">
+      <button
+        className="p-2 transition duration-300 hover:animate-bounce"
+        onClick={handleLike}
+      >
+        {liked ? (
+          <HeartIconSolid className="w-5 h-5 text-red-600" />
+        ) : (
+          <HeartIconOutline className="w-5 h-5 text-white" />
+        )}
+      </button>
+      <span className="text-white">{likes}</span>
     </div>
   );
 }

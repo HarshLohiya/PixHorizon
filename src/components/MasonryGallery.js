@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { useEffect } from "react";
 import { HeartIcon as HeartIconOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import { ShareIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 export default function MasonryGallery({ images }) {
   return (
@@ -33,7 +35,7 @@ export default function MasonryGallery({ images }) {
               <div className="flex justify-between mb-2">
                 <LikeButton
                   imageId={image._id}
-                  initialLikes={image.likes || 0}
+                  initialLikes={image.likes.length || 0}
                 />
                 <ShareButton imageId={image._id} imageTitle={image.title}/>
               </div>
@@ -47,11 +49,37 @@ export default function MasonryGallery({ images }) {
 
 
 function LikeButton({ imageId, initialLikes }) {
+  const { data: session } = useSession();
   const [liked, setLiked] = useState(false);
   const [likes, setLikes] = useState(initialLikes);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLikeStatus = async () => {
+      try {
+        const response = await fetch(`/api/images/${imageId}/like`);
+        if (response.ok) {
+          const data = await response.json();
+          setLiked(data.liked);
+        } else {
+          console.error("Failed to fetch like status");
+        }
+      } catch (error) {
+        console.error("Error fetching like status:", error);
+      }
+    };
+
+    fetchLikeStatus();
+  }, [imageId]);
 
   const handleLike = async (e) => {
     e.preventDefault();
+
+    if (!session) {
+      alert("You must be logged in to like this image.");
+      return;
+    }
+
     const newLikedState = !liked;
     const updatedLikes = newLikedState ? likes + 1 : likes - 1;
 
@@ -61,7 +89,6 @@ function LikeButton({ imageId, initialLikes }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ likes: updatedLikes }),
       });
 
       if (response.ok) {
@@ -77,7 +104,10 @@ function LikeButton({ imageId, initialLikes }) {
 
   return (
     <div className="flex items-center space-x-0.5">
-      <button className="p-2 transition duration-300 hover:animate-bounce" onClick={handleLike}>
+      <button
+        className="p-2 transition duration-300 hover:animate-bounce"
+        onClick={handleLike}
+      >
         {liked ? (
           <HeartIconSolid className="w-5 h-5 text-red-600" />
         ) : (
@@ -88,6 +118,7 @@ function LikeButton({ imageId, initialLikes }) {
     </div>
   );
 }
+
 
 
 

@@ -2,6 +2,8 @@
 import dbConnect from "@/lib/dbConnect";
 import Image from "@/models/Image";
 import User from "@/models/User"; // Import the User model if not already imported
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
@@ -36,6 +38,9 @@ export async function GET(request) {
       );
     }
 
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id || null;
+
     // Format the images
     const formattedImages = images.map((image) => ({
       _id: image._id,
@@ -45,6 +50,7 @@ export async function GET(request) {
       width: image.width,
       height: image.height,
       likes: image.likes,
+      liked: image.likes.includes(userId) ? true : false,
       price: image.price,
     }));
 
