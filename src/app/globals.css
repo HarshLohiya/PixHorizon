@@ -4,8 +4,17 @@
 
 @import 'tailwindcss/tailwind.css';
 
+@font-face {
+  font-family: 'Peaches and Cream';
+  src: url('/fonts/peaches_and_cream/peaches_and_cream_regular.woff2') format('woff2'),
+       url('/fonts/peaches_and_cream/peaches_and_cream_regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: 'Helvetica', sans-serif;
+  font-family: 'Peaches and Cream', cursive, sans-serif;
 }
 
 

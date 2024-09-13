@@ -165,11 +165,11 @@ export default function ImagePage() {
   return (
     <div className="bg-green-200">
       <Header />
-      <div className="flex flex-col lg:flex-row min-h-screen py-4 px-4 md:px-10">
+      <div className="flex flex-col lg:flex-row min-h-screen py-4 px-4">
         {/* Image Section */}
         <div
           id="image-section"
-          className="w-full flex-col items-center relative"
+          className="w-full flex-col items-center relative mb-4"
         >
           <div className="relative bg-black rounded-lg w-full">
             <Image
@@ -189,13 +189,6 @@ export default function ImagePage() {
                 >
                   <ArrowLeftIcon className="w-6 h-6" />
                 </Link>
-                <div className="absolute top-4 right-4 flex space-x-2">
-                  <LikeButton
-                    imageId={image._id}
-                    initialLikes={image.likes.length || 0}
-                  />
-                  <ShareButton imageUrl={`/images/${id}`} />
-                </div>
                 <div className="absolute bottom-4 right-4 flex space-x-4">
                   <Link href={`/images/${image.nextId}`}>
                     <button className="bg-white bg-opacity-60 p-2 rounded-full shadow-lg text-black hover:bg-opacity-100">
@@ -228,33 +221,50 @@ export default function ImagePage() {
         </div>
 
         {/* Details Section */}
-        <div className="w-full lg:w-2/5 lg:pl-6 lg:overflow-y-auto lg:h-full">
-          <div className="mt-6 lg:mt-0">
-            <h1 className="text-2xl font-bold">{image.title}</h1>
-            <p className="mt-4">{image.description}</p>
-            <p className="mt-2 text-sm text-gray-500">{image.category}</p>
+        <div className="w-full lg:w-2/5 lg:overflow-y-auto lg:ml-4">
+          <div className="bg-white rounded-lg px-4 py-3 bg-opacity-60">
+            <div className="flex space-x-4">
+              <LikeButton
+                imageId={image._id}
+                initialLikes={image.likes.length || 0}
+              />
+              <ShareButton imageUrl={`/images/${id}`} />
+            </div>
+            <div className="mt-6 lg:mt-0">
+              <h1 className="text-2xl font-bold text-black">{image.title}</h1>
+              <Link className="mt-2 text-sm text-gray-500" href={`/user/${image.user.username}`}>
+                Posted by: {image.user.username}
+              </Link>
+              <p className="mt-2 text-sm text-gray-500">
+                Uploaded on: {new Date(image.createdAt).toLocaleString()}
+              </p>
+              <p className="mt-4">{image.description}</p>
+              <p className="mt-2 text-sm text-gray-500">{image.category}</p>
 
-            {/* Add to Cart Button */}
-            <div className="mt-4">
-              <button
-                onClick={handleAddToCart}
-                disabled={isAddingToCart || isInCart}
-                className={`px-4 py-2 font-semibold text-white rounded-lg transition ${
-                  isInCart
-                    ? "bg-gray-400 hover:bg-gray-600 cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700"
-                }`}
-              >
-                {isInCart ? "Already in Cart" : "Add to Cart"}
-              </button>
+              {/* Add to Cart Button */}
+              <div className="mt-4">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart || isInCart}
+                  className={`px-4 py-2 font-semibold text-white rounded-lg transition ${
+                    isInCart
+                      ? "bg-gray-400 hover:bg-gray-600 cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                >
+                  {isInCart ? "Already in Cart" : "Add to Cart"}
+                </button>
+              </div>
             </div>
           </div>
           {/* Comments Section */}
-          <div className="mt-6">
-            <h2 className="text-xl font-semibold border-b pb-2">Comments</h2>
+          <div className="mt-3 bg-white bg-opacity-60 rounded-lg px-4 py-3">
+            <h2 className="text-xl font-semibold text-black border-b pb-2">
+              Comments
+            </h2>
 
             {session && (
-              <form onSubmit={handleCommentSubmit} className="mt-4">
+              <form onSubmit={handleCommentSubmit} className="">
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
@@ -264,18 +274,18 @@ export default function ImagePage() {
                 />
                 <button
                   type="submit"
-                  className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 >
                   Post Comment
                 </button>
               </form>
             )}
 
-            <div className="mt-6 space-y-6">
+            <div className="mt-6 space-y-4">
               {comments.map((comment) => (
                 <div
                   key={comment._id}
-                  className="p-4 border rounded-lg bg-gray-50"
+                  className="p-4 border rounded-lg bg-gray-50 bg-opacity-70"
                 >
                   <p className="text-sm font-semibold text-blue-600">
                     {comment.username}
@@ -424,16 +434,16 @@ function LikeButton({ imageId, initialLikes }) {
   return (
     <div className="flex items-center space-x-0.5">
       <button
-        className="p-2 transition duration-300 hover:animate-bounce"
+        className="p-2 transition duration-300"
         onClick={handleLike}
       >
         {liked ? (
-          <HeartIconSolid className="w-5 h-5 text-red-600" />
+          <HeartIconSolid className="w-6 h-6 text-red-600" />
         ) : (
-          <HeartIconOutline className="w-5 h-5 text-white" />
+          <HeartIconOutline className="w-6 h-6 text-black" />
         )}
       </button>
-      <span className="text-white">{likes}</span>
+      <span className="text-black">{likes}</span>
     </div>
   );
 }
@@ -458,9 +468,9 @@ function ShareButton({ imageUrl }) {
   return (
     <button
       onClick={handleShare}
-      className="p-2 rounded-full transition duration-300 hover:bg-gray-500"
+      className="p-2 rounded-full transition duration-300 hover:bg-gray-400"
     >
-      <ShareIcon className="w-5 h-5 text-white" />
+      <ShareIcon className="w-6 h-6 text-black" />
     </button>
   );
 }

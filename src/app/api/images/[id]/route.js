@@ -8,7 +8,7 @@ export async function GET(request, { params }) {
 
   try {
     await dbConnect();
-    const image = await Image.findById(id);
+    const image = await Image.findById(id).populate("user", "username");
     if (!image) {
       return NextResponse.json({ message: "Image not found" }, { status: 404 });
     }

@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 
 export default function MasonryGallery({ images }) {
   return (
-    <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 space-y-3">
+    <div className="columns-1 sm:columns-2 gap-3 space-y-3">
       {images.map((image, index) => (
         <Link key={index} href={`/images/${image._id}`} passHref>
           <div className="relative group break-inside-avoid mb-4 cursor-pointer">

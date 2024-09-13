@@ -5,10 +5,16 @@ import { NextResponse } from "next/server";
 import User from "@/models/User";
 
 export async function POST(request) {
-  await dbConnect();
-
   try {
-    const { username, email, password } = await request.json();
+    await dbConnect();
+
+    const data = await request.formData();
+    const username = data.get("username");
+    const fullName = data.get("fullName");
+    const email = data.get("email");
+    const password = data.get("password");
+
+    // const { username, email, password } = await request.json();
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -17,12 +23,23 @@ export async function POST(request) {
       });
     }
 
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return new Response(
+        JSON.stringify({ error: "Username is already taken!" }),
+        {
+          status: 400,
+        }
+      );
+    }
+
     const hashedPassword = await hash(password, 12);
 
     const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
+      fullName,
     });
 
     return NextResponse.json(

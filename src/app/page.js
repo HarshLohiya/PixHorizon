@@ -31,9 +31,7 @@ export default function Home() {
     <div>
       <Header />
 
-      <section className="w-full h-[500px]">
-        {session ? `Welcome, ${session.user.email + ", " + session.user.username}!` : "Welcome!"}
-        <button className="ml-16" onClick={signOut}>Log out</button>
+      <section className="w-full h-[300px] md:h-[500px]">
         <Swiper
           style={{
             "--swiper-navigation-color": "#fff",
@@ -53,7 +51,7 @@ export default function Home() {
           modules={[Autoplay, Pagination, Navigation]}
         >
           <SwiperSlide>
-            <div className="relative w-full h-[500px]">
+            <div className="relative w-full h-[300px] md:h-[500px]">
               <Image
                 src="/photo1.jpg"
                 alt="Image 1"
@@ -64,7 +62,7 @@ export default function Home() {
             </div>
           </SwiperSlide>
           <SwiperSlide>
-            <div className="relative w-full h-[500px]">
+            <div className="relative w-full h-[300px] md:h-[500px]">
               <Image
                 src="/photo2.jpg"
                 alt="Image 2"
@@ -75,7 +73,7 @@ export default function Home() {
             </div>
           </SwiperSlide>
           <SwiperSlide>
-            <div className="relative w-full h-[500px]">
+            <div className="relative w-full h-[300px] md:h-[500px]">
               <Image
                 src="/photo3.jpg"
                 alt="Image 3"

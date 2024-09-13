@@ -13,6 +13,7 @@ export default function Upload() {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("")
   const [message, setMessage] = useState("");
 
   const handleFileChange = (e) => {
@@ -26,6 +27,10 @@ export default function Upload() {
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -120,6 +125,15 @@ export default function Upload() {
             <option value="flowers">Flowers</option>
             <option value="abstract">Abstract</option>
           </select>
+
+          <textarea
+            value={description}
+            onChange={handleDescriptionChange}
+            required
+            className="w-full max-w-2xl p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Write a small description..."
+          />
+          <br/>
           <button
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded"

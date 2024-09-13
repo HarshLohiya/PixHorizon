@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { FaBars, FaTimes, FaShoppingCart } from "react-icons/fa";
+import { FaBars, FaTimes, FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
@@ -66,7 +66,7 @@ export default function Header() {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Title */}
-        <div className="text-5xl md:text-6xl italic text-red-600 font-peaches text-shadow-md -translate-y-0.5">
+        <div className="text-5xl md:text-6xl font-peaches italic text-red-600 text-shadow-md">
           <a href="/">PixHorizon</a>
         </div>
 
@@ -199,19 +199,15 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
-                  className="focus:outline-none flex items-center space-x-2"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-red-500"
                 >
-                  <img
-                    src={session.user.image || "/default-avatar.png"}
-                    alt="User Avatar"
-                    className="w-8 h-8 rounded-full border border-gray-400"
-                  />
+                  <FaUserCircle size={25} />
                 </button>
 
                 {showProfileMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-orange-100 rounded-md shadow-lg py-2">
                     <a
-                      href="/profile"
+                      href={`/user/${session.user.username}`}
                       className={
                         pathname.includes("/profile")
                           ? activeSubLink
