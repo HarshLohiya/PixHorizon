@@ -52,6 +52,7 @@ export async function GET(request) {
       likes: image.likes,
       liked: image.likes.includes(userId) ? true : false,
       price: image.price,
+      views: image.views,
     }));
 
     return NextResponse.json(formattedImages);

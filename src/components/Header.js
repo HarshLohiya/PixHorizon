@@ -66,7 +66,7 @@ export default function Header() {
     >
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Title */}
-        <div className="text-5xl md:text-6xl font-peaches italic text-red-600 text-shadow-md">
+        <div className="text-5xl md:text-6xl font-peaches italic text-red-600 text-shadow-md translate-y-1.5">
           <a href="/">PixHorizon</a>
         </div>
 
@@ -209,12 +209,12 @@ export default function Header() {
                     <a
                       href={`/user/${session.user.username}`}
                       className={
-                        pathname.includes("/profile")
+                        pathname.includes(`/user/${session.user.username}`)
                           ? activeSubLink
                           : inactiveSubLink
                       }
                     >
-                      Profile Details
+                      Profile
                     </a>
                     <a
                       href="/upload"

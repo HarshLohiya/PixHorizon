@@ -76,10 +76,16 @@ export default function ImagePage() {
       }
     };
 
+    const incrementViews = async () => {
+      await fetch(`/api/images/${id}/view`, {
+        method: "POST",
+      });
+    };
     if (id) {
       fetchImage();
       fetchComments();
-      checkIfInCart(); // Check if the image is in the cart when the component mounts
+      checkIfInCart();
+      incrementViews();
     }
   }, [id, session]);
 
@@ -180,6 +186,7 @@ export default function ImagePage() {
               priority={true}
               className="w-full h-auto p-2"
               style={{ maxHeight: "90vh", objectFit: "contain" }}
+              onContextMenu={(e) => e.preventDefault()}
             />
             {!isFullScreen && (
               <>
@@ -232,7 +239,10 @@ export default function ImagePage() {
             </div>
             <div className="mt-6 lg:mt-0">
               <h1 className="text-2xl font-bold text-black">{image.title}</h1>
-              <Link className="mt-2 text-sm text-gray-500" href={`/user/${image.user.username}`}>
+              <Link
+                className="mt-2 text-sm text-gray-500"
+                href={`/user/${image.user.username}`}
+              >
                 Posted by: {image.user.username}
               </Link>
               <p className="mt-2 text-sm text-gray-500">

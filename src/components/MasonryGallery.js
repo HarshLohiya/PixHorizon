@@ -22,6 +22,7 @@ export default function MasonryGallery({ images }) {
               width={image.width}
               height={image.height}
               className="w-full h-auto rounded-lg"
+              onContextMenu={(e) => e.preventDefault()}
             />
             {/* Overlay on hover */}
             <div className="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4 rounded-lg">
@@ -37,7 +38,7 @@ export default function MasonryGallery({ images }) {
                   imageId={image._id}
                   initialLikes={image.likes.length || 0}
                 />
-                <ShareButton imageId={image._id} imageTitle={image.title}/>
+                <ShareButton imageId={image._id} imageTitle={image.title} />
               </div>
             </div>
           </div>
@@ -46,7 +47,6 @@ export default function MasonryGallery({ images }) {
     </div>
   );
 }
-
 
 function LikeButton({ imageId, initialLikes }) {
   const { data: session } = useSession();
@@ -119,9 +119,6 @@ function LikeButton({ imageId, initialLikes }) {
   );
 }
 
-
-
-
 function ShareButton({ imageId, imageTitle }) {
   const handleShare = async (e) => {
     e.preventDefault(); // Prevent click from propagating to the Link
@@ -159,4 +156,3 @@ function ShareButton({ imageId, imageTitle }) {
     </button>
   );
 }
-

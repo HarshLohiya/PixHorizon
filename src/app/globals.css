@@ -12,6 +12,11 @@
   font-style: normal;
 }
 
+.no-right-click {
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
 body {
   font-family: 'Helvetica', sans-serif;
   font-family: 'Peaches and Cream', cursive, sans-serif;

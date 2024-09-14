@@ -58,6 +58,7 @@ export default function Home() {
                 fill
                 style={{ objectFit: "cover" }}
                 quality={80}
+                onContextMenu={(e) => e.preventDefault()}
               />
             </div>
           </SwiperSlide>
@@ -69,6 +70,7 @@ export default function Home() {
                 fill
                 style={{ objectFit: "cover" }}
                 quality={80}
+                onContextMenu={(e) => e.preventDefault()}
               />
             </div>
           </SwiperSlide>
@@ -80,6 +82,7 @@ export default function Home() {
                 fill
                 style={{ objectFit: "cover" }}
                 quality={80}
+                onContextMenu={(e) => e.preventDefault()}
               />
             </div>
           </SwiperSlide>
