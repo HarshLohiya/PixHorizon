@@ -50,7 +50,7 @@ export default function SearchPage() {
       <Header />
       <div className="container mx-auto p-8">
         <h1 className="text-3xl text-black font-semibold mb-4">
-          Search Results for "{searchTerm}"
+          Search Results for &quot;{searchTerm}&quot;
         </h1>
 
         {/* Display Users */}
@@ -82,7 +82,7 @@ export default function SearchPage() {
 
         {/* If both users and images are empty */}
         {users.length === 0 && images.length === 0 && (
-          <p>No users or images found for "{searchTerm}".</p>
+          <p>No users or images found for &quot;{searchTerm}&quot;.</p>
         )}
       </div>
       <Footer />
