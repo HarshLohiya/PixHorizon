@@ -248,8 +248,12 @@ export default function ImagePage() {
               <p className="mt-2 text-sm text-gray-500">
                 Uploaded on: {new Date(image.createdAt).toLocaleString()}
               </p>
-              <p className="mt-4">{image.description}</p>
-              <p className="mt-2 text-sm text-gray-500">{image.category}</p>
+              <p className="mt-4 text-sm text-gray-500">
+                Description: {image.description}
+              </p>
+              <p className="mt-2 text-sm text-gray-500">
+                Category: {image.category}
+              </p>
 
               {/* Add to Cart Button */}
               <div className="mt-4">

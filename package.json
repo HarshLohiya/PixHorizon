@@ -26,6 +26,7 @@
     "react-icons": "^5.3.0",
     "react-modal": "^3.16.1",
     "react-responsive-carousel": "^3.2.20",
+    "react-tag-input": "^6.10.3",
     "sharp": "^0.33.5",
     "swiper": "^11.1.9",
     "tailwindcss-textshadow": "^2.1.3",

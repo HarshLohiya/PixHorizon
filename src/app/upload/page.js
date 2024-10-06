@@ -2,9 +2,9 @@
 
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { WithContext as ReactTags } from "react-tag-input";
 import Link from "next/link";
 
 export default function Upload() {
@@ -13,24 +13,25 @@ export default function Upload() {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("")
+  const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
+  const [tags, setTags] = useState([]);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type.startsWith("image/")) {
+      setFile(selectedFile);
+    } else {
+      setMessage("Please upload a valid image file.");
+    }
   };
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-  };
+  const handleTitleChange = (e) => setTitle(e.target.value);
+  const handleCategoryChange = (e) => setCategory(e.target.value);
+  const handleDescriptionChange = (e) => setDescription(e.target.value);
 
-  const handleCategoryChange = (e) => {
-    setCategory(e.target.value);
-  };
-
-  const handleDescriptionChange = (e) => {
-    setDescription(e.target.value);
-  }
+  const handleDelete = (i) => setTags(tags.filter((tag, index) => index !== i));
+  const handleAddition = (tag) => setTags([...tags, tag]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,14 +41,24 @@ export default function Upload() {
       return;
     }
 
+    if (tags.length === 0) {
+      setMessage("Please add at least one tag.");
+      return;
+    }
+    
+
+    // Create form data
     const formData = new FormData();
     formData.append("file", file);
     formData.append("title", title);
     formData.append("category", category);
+    formData.append("description", description);
+    tags.forEach((tag) => {
+      formData.append("tags", tag.text); // Assuming tag is an object with a 'text' property
+    }); // Convert tags to array of strings
 
-    // Include user info (e.g., email) to associate the image with the user
     if (session?.user?.email) {
-      formData.append("userEmail", session.user.email); // Adjust based on your session object
+      formData.append("userEmail", session.user.email);
     }
 
     try {
@@ -62,7 +73,7 @@ export default function Upload() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      setMessage(data.message);
+      setMessage(data.message || "Image uploaded successfully!");
     } catch (error) {
       console.error("Error uploading image:", error);
       setMessage("Failed to upload image.");
@@ -93,13 +104,13 @@ export default function Upload() {
     <div className="bg-green-200 flex flex-col justify-between min-h-screen">
       <Header />
       <div className="p-8 container mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Upload Image</h1>
+        <h1 className="text-2xl font-bold mb-4 text-black">Upload Image</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="file"
             onChange={handleFileChange}
             required
-            className="block mb-4"
+            className="block max-w-80 w-full text-black text-center p-2 border border-gray-400 rounded mt-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
             type="text"
@@ -107,13 +118,13 @@ export default function Upload() {
             value={title}
             required
             onChange={handleTitleChange}
-            className="block mb-4 p-2 border border-gray-300 rounded text-black"
+            className="block mb-4 p-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <select
             value={category}
             onChange={handleCategoryChange}
-            required={true}
-            className="block mb-4 p-2 border border-gray-300 rounded text-black"
+            required
+            className="block mb-4 p-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="" disabled>
               Choose a category...
@@ -133,7 +144,23 @@ export default function Upload() {
             className="w-full max-w-2xl p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Write a small description..."
           />
-          <br/>
+
+          <ReactTags
+            tags={tags}
+            handleDelete={handleDelete}
+            handleAddition={handleAddition}
+            autoFocus={false}
+            required
+            placeholder="Add search tags"
+            classNames={{
+              tags: "-translate-y-3",
+              tagInputField:
+                "w-full max-w-xl p-2 border rounded-lg text-sm text-black mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+              tag: "bg-blue-500 text-white p-1 text-sm rounded-lg mr-2",
+              remove: "ml-2 text-red-500 cursor-pointer",
+            }}
+          />
+
           <button
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded"
@@ -141,7 +168,7 @@ export default function Upload() {
             Upload
           </button>
         </form>
-        {message && <p className="mt-4">{message}</p>}
+        {message && <p className="mt-4 text-black">* {message}</p>}
       </div>
       <Footer />
     </div>

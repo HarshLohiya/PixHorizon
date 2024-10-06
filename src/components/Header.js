@@ -2,8 +2,9 @@
 
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { FaBars, FaTimes, FaShoppingCart, FaUserCircle } from "react-icons/fa";
+import { FaBars, FaTimes, FaShoppingCart, FaUserCircle, FaSearch} from "react-icons/fa";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function Header() {
@@ -11,8 +12,11 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const pathname = usePathname();
   const { data: session } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,7 +37,7 @@ export default function Header() {
     const fetchCartCount = async () => {
       if (session) {
         try {
-          const res = await fetch("/api/cart"); // Fetch cart items
+          const res = await fetch("/api/cart");
           if (!res.ok) throw new Error("Failed to fetch cart items.");
           const data = await res.json();
           setCartCount(data.length);
@@ -45,6 +49,14 @@ export default function Header() {
 
     fetchCartCount();
   }, [session]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      setSearchTerm(""); 
+      router.push(`/search?q=${encodeURIComponent(searchTerm)}`);
+    }
+  };
 
   const activeLink = "text-green-500 font-semibold";
   const inactiveLink = "text-black hover:text-green-500 font-semibold";
@@ -64,14 +76,14 @@ export default function Header() {
         isSticky ? "bg-opacity-90" : "bg-opacity-100"
       }`}
     >
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-3 flex flex-wrap items-center justify-between">
         {/* Title */}
-        <div className="text-5xl md:text-6xl font-peaches italic text-red-600 text-shadow-md translate-y-1.5">
+        <div className="text-4xl sm:text-5xl lg:text-6xl font-peaches italic text-red-600 text-shadow-md translate-y-1.5 flex-shrink-0">
           <a href="/">PixHorizon</a>
         </div>
 
         {/* Navigation Links */}
-        <nav className="hidden lg:-ml-60 md:flex space-x-6 bg-orange-100 rounded-3xl py-2 px-4">
+        <nav className="hidden md:flex space-x-6 bg-orange-100 rounded-3xl py-2 px-4">
           <a href="/" className={pathname === "/" ? activeLink : inactiveLink}>
             Home
           </a>
@@ -181,7 +193,22 @@ export default function Header() {
         </nav>
 
         {/* Login, Cart, and Mobile Menu Button */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 flex-shrink-0">
+          <form onSubmit={handleSearch} className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              class="block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+            />
+            <button
+              type="submit"
+              class="absolute top-0 end-0 h-full p-2 text-sm font-medium text-white bg-blue-600 rounded-e-lg border border-blue-600 hover:bg-blue-700"
+            >
+              <FaSearch className="text-white" />
+            </button>
+          </form>
           {!session ? (
             <>
               <a href="/signup" className="text-gray-700 hover:text-red-500">
@@ -193,7 +220,9 @@ export default function Header() {
             </>
           ) : (
             <>
-              <span className="text-gray-700">Hi, {session.user.username}</span>
+              <span className="text-gray-700 hidden sm:block">
+                Hi, {session.user.username}
+              </span>
 
               {/* User Avatar for Dropdown */}
               <div className="relative">
@@ -252,7 +281,7 @@ export default function Header() {
                 className="flex items-center text-gray-700 hover:text-red-500"
               >
                 <FaShoppingCart size={20} />
-                <span className="ml-1">({cartCount})</span>
+                <span className="ml-1 hidden sm:inline">({cartCount})</span>
               </Link>
             </>
           )}

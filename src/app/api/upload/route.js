@@ -26,6 +26,8 @@ export async function POST(request) {
     const title = data.get("title");
     const category = data.get("category");
     const userEmail = data.get("userEmail")
+    const description = data.get("description");
+    const tags = data.getAll("tags");
 
     if (!file) {
       throw new Error("No file uploaded");
@@ -65,6 +67,8 @@ export async function POST(request) {
       src: uploadResponse.url, // ImageKit.io provides the URL directly
       title: title,
       category: category,
+      description: description,
+      tags: tags,
       width: uploadResponse.width, // Assuming ImageKit.io provides width
       height: uploadResponse.height, // Assuming ImageKit.io provides height
       like: 0,
