@@ -55,7 +55,7 @@ export default function SignUp() {
     <div>
       <Header />
 
-      <div className="flex items-center justify-center bg-green-200 p-16">
+      <div className="flex items-center justify-center bg-green-200 py-12 px-4">
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded shadow-lg">
           <h2 className="text-2xl font-bold text-center text-black">Sign Up</h2>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

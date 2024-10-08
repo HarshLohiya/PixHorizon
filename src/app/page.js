@@ -4,16 +4,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 import Image from "next/image";
-
 import React from "react";
-import { Carousel } from "react-responsive-carousel";
-import { useSession, signOut } from "next-auth/react";
+// import { Carousel } from "react-responsive-carousel";
 import { useRouter } from "next/navigation";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
-
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 
 // Import Swiper styles
@@ -21,17 +17,18 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
+import Link from "next/link";
 
 export default function Home() {
-
-  const { data: session, status } = useSession();
   const router = useRouter();
 
   return (
     <div>
       <Header />
 
-      <section className="w-full h-[300px] md:h-[500px]">
+      <section className="w-full h-[300px] md:h-[83vh]">
+        {" "}
+        {/* 83vh is 5/6 of the screen height */}
         <Swiper
           style={{
             "--swiper-navigation-color": "#fff",
@@ -51,7 +48,7 @@ export default function Home() {
           modules={[Autoplay, Pagination, Navigation]}
         >
           <SwiperSlide>
-            <div className="relative w-full h-[300px] md:h-[500px]">
+            <div className="relative w-full h-[300px] md:h-[83vh]">
               <Image
                 src="/photo1.jpg"
                 alt="Image 1"
@@ -62,8 +59,9 @@ export default function Home() {
               />
             </div>
           </SwiperSlide>
+
           <SwiperSlide>
-            <div className="relative w-full h-[300px] md:h-[500px]">
+            <div className="relative w-full h-[300px] md:h-[83vh]">
               <Image
                 src="/photo2.jpg"
                 alt="Image 2"
@@ -74,8 +72,9 @@ export default function Home() {
               />
             </div>
           </SwiperSlide>
+
           <SwiperSlide>
-            <div className="relative w-full h-[300px] md:h-[500px]">
+            <div className="relative w-full h-[300px] md:h-[83vh]">
               <Image
                 src="/photo3.jpg"
                 alt="Image 3"
@@ -129,9 +128,11 @@ export default function Home() {
           <p className="text-white text-lg md:text-xl lg:text-2xl mt-4">
             Photographer
           </p>
-          <button className="mt-6 px-6 py-2 md:px-8 md:py-3 bg-red-500 text-white text-base md:text-lg font-semibold rounded-lg">
-            Check Out Photos
-          </button>
+          <Link href="/galleries">
+            <button className="mt-6 px-6 py-2 md:px-8 md:py-3 bg-red-500 text-white text-base md:text-lg font-semibold rounded-lg">
+              Check Out Photos
+            </button>
+          </Link>
         </div>
       </section>
 

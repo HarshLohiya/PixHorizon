@@ -19,20 +19,22 @@ export default function GalleriesPage() {
     <div>
       <Header />
       <div className="min-h-screen bg-green-200 p-8">
-        <h1 className="text-4xl font-bold text-center mb-10">
+        <h1 className="text-4xl font-bold text-center mb-10 text-black">
           Explore Galleries
         </h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-8">
           {galleries.map((gallery) => (
             <Link key={gallery.id} href={`/${gallery.id}`} passHref>
               <div className="relative group cursor-pointer">
-                <Image
-                  src={gallery.src}
-                  alt={gallery.title}
-                  width={600}
-                  height={400}
-                  className="w-full h-auto object-cover rounded-xl shadow-lg transform transition-transform duration-300 group-hover:scale-105"
-                />
+                <div className="relative aspect-[16/10] w-full">
+                  <Image
+                    src={gallery.src}
+                    alt={gallery.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="rounded-xl shadow-lg transform transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
                 <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-105 transition-opacity transition-transform duration-300 rounded-xl">
                   <h2 className="text-2xl font-bold text-white">
                     {gallery.title}

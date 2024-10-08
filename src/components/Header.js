@@ -200,7 +200,7 @@ export default function Header() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              class="block p-2 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+              class="block p-2 sm:w-full w-40 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
             />
             <button
               type="submit"
