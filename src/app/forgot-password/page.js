@@ -40,7 +40,7 @@ export default function ForgotPassword() {
             <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
               Send Reset Email
             </button>
-            {message && <p className="mt-4 text-center">{message}</p>}
+            {message && <p className="mt-4 text-center text-red-500">{message}</p>}
           </form>
         </div>
       </div>

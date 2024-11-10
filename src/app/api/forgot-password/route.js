@@ -37,8 +37,8 @@ export async function POST(request) {
     const mailOptions = {
       from: process.env.EMAIL_USERNAME,
       to: email,
-      subject: "Password Reset Request",
-      html: `<p>You requested a password reset. Click <a href="${resetUrl}">here</a> to reset your password.</p>`,
+      subject: "PixHorizon | Password Reset Request",
+      html: `<p>You requested to reset your PixHorizon password. Click <a href="${resetUrl}">here</a> to reset your password. <br><br> If you did not make this request, please ignore this email or contact support. </p>`,
     };
 
     await transporter.sendMail(mailOptions);
