@@ -18,6 +18,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   followers: [
     {
       type: mongoose.Schema.Types.ObjectId,
