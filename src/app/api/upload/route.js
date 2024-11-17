@@ -11,12 +11,6 @@ const imageKit = new ImageKit({
   urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
 });
 
-// export const config = {
-//   api: {
-//     bodyParser: false, // Disable the default bodyParser to handle file uploads
-//   },
-// };
-
 export async function POST(request) {
   try {
     await dbConnect();
@@ -43,7 +37,7 @@ export async function POST(request) {
 
     // Resize and compress the image using sharp
     const resizedBuffer = await sharp(buffer)
-      .resize(2048) // Resize to 800px width, maintain aspect ratio
+      .resize(2048) // Resize to 2048px width, maintain aspect ratio
       .jpeg({ quality: 70 }) // Compress to 70% quality as JPEG
       .toBuffer();
 

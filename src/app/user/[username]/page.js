@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import MasonryGallery from "@/components/MasonryGallery";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { notFound } from "next/navigation";
 
 export default function UserImages({ params }) {
   const { data: session } = useSession();
@@ -14,6 +15,7 @@ export default function UserImages({ params }) {
   const [totalViews, setTotalViews] = useState(0);
   const [totalLikes, setTotalLikes] = useState(0);
   const [error, setError] = useState(null);
+  const [pageFound, setPageFound] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showFollowersModal, setShowFollowersModal] = useState(false);
@@ -52,7 +54,7 @@ export default function UserImages({ params }) {
         
       } catch (error) {
         console.error("Error fetching user data:", error);
-        setError(error.message);
+        setPageFound(false);
       }
     };
 
@@ -60,6 +62,10 @@ export default function UserImages({ params }) {
       fetchUserData();
     }
   }, [session, username, isFollowing]);
+
+  if (!pageFound) {
+    notFound();
+  }
 
   const toggleFollow = async () => {
     setLoading(true);
@@ -100,9 +106,9 @@ export default function UserImages({ params }) {
   };
 
   return (
-    <div className="bg-green-200 min-h-screen">
+    <div>
       <Header />
-      <main className="container mx-auto px-6 py-12">
+      <main className="bg-green-200 px-5 py-5 sm:px-7 sm:py-7 md:px-9 md:py-8 lg:px-16">
         <div className="text-center">
           {/* Centered Username */}
           <h1 className="text-4xl font-bold mb-4 text-black">

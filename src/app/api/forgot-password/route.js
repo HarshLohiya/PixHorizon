@@ -25,7 +25,8 @@ export async function POST(request) {
     await user.save();
 
     // Send email
-    const resetUrl = `${process.env.NEXTAUTH_URL}/reset-password?token=${resetToken}`;
+    const domain = "https://pixhorizon.vercel.app"
+    const resetUrl = `${domain}/reset-password?token=${resetToken}`;
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

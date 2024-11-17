@@ -109,7 +109,9 @@ export default function CartPage() {
     return (
       <div className="min-h-screen flex flex-col justify-between bg-green-200">
         <Header />
-        <p className="mx-auto text-lg text-gray-700">Your cart is empty.</p>
+        <p className="mx-auto text-lg text-gray-700">
+          Whoops, your cart is empty! Start adding your favorite finds.
+        </p>
         <Footer />
       </div>
     );

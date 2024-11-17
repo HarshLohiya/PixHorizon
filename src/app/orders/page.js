@@ -62,7 +62,9 @@ export default function OrdersPage() {
     return (
       <div className="min-h-screen flex flex-col justify-between bg-green-200">
         <Header />
-        <p className="mx-auto text-lg text-gray-700">You have no orders.</p>
+        <p className="mx-auto text-lg text-gray-700">
+          No orders yet! Start shopping to fill this space.
+        </p>
         <Footer />
       </div>
     );

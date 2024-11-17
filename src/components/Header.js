@@ -76,7 +76,7 @@ export default function Header() {
         isSticky ? "bg-opacity-90" : "bg-opacity-100"
       }`}
     >
-      <div className="container mx-auto px-4 py-3 flex flex-wrap items-center justify-between">
+      <div className="px-4 py-3 sm:px-6 md:px-9 lg:px-13 flex flex-wrap items-center justify-between">
         {/* Title */}
         <div className="text-4xl sm:text-5xl lg:text-6xl font-peaches italic text-red-600 text-shadow-md translate-y-1.5 flex-shrink-0">
           <a href="/">PixHorizon</a>

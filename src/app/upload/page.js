@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { WithContext as ReactTags } from "react-tag-input";
+import { WithContext as ReactTags, SEPARATORS } from "react-tag-input";
 import Link from "next/link";
 
 export default function Upload() {
@@ -16,6 +16,8 @@ export default function Upload() {
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
   const [tags, setTags] = useState([]);
+  const [isUploadLoading, setIsUploadLoading] = useState(false);
+  const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -62,6 +64,7 @@ export default function Upload() {
     }
 
     try {
+      setIsUploadLoading(true);
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -74,10 +77,18 @@ export default function Upload() {
       }
 
       setMessage(data.message || "Image uploaded successfully!");
+      setIsSuccessDialogOpen(true);
     } catch (error) {
       console.error("Error uploading image:", error);
       setMessage("Failed to upload image.");
     }
+    finally {
+      setIsUploadLoading(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    window.location.reload();
   };
 
   if (status === "loading") {
@@ -108,6 +119,7 @@ export default function Upload() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="file"
+            accept="image/*"
             onChange={handleFileChange}
             required
             className="block max-w-80 w-full text-black text-center p-2 border border-gray-400 rounded mt-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -150,6 +162,7 @@ export default function Upload() {
             handleDelete={handleDelete}
             handleAddition={handleAddition}
             autoFocus={false}
+            separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
             required
             placeholder="Add search tags"
             classNames={{
@@ -169,6 +182,33 @@ export default function Upload() {
           </button>
         </form>
         {message && <p className="mt-4 text-black">* {message}</p>}
+
+        {/* Loading Dialog */}
+        {isUploadLoading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+            <div className="bg-white p-6 rounded shadow-lg flex flex-col items-center text-black">
+              <div className="loader mb-4"></div> {/* Spinner */}
+              <p>
+                Almost there! Your photo is being uploaded to the gallery...
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Success Dialog */}
+        {isSuccessDialogOpen && (
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+            <div className="bg-white p-6 rounded shadow-lg text-center text-black">
+              <p>Upload complete! Your photo is now part of the gallery.</p>
+              <button
+                onClick={handleRefresh}
+                className="mt-4 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       <Footer />
     </div>

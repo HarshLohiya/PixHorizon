@@ -46,9 +46,9 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-green-200">
+    <div>
       <Header />
-      <div className="container mx-auto p-8">
+      <div className="bg-green-200 px-5 py-5 sm:px-7 sm:py-7 md:px-9 md:py-8 lg:px-16">
         <h1 className="text-3xl text-black font-semibold mb-4">
           Search Results for &quot;{searchTerm}&quot;
         </h1>
