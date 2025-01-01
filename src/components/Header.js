@@ -15,7 +15,7 @@ export default function Header() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -200,7 +200,7 @@ export default function Header() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block p-2 sm:w-full w-40 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+              className="block p-2 pr-8 sm:w-full w-40 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
             />
             <button
               type="submit"
@@ -209,7 +209,14 @@ export default function Header() {
               <FaSearch className="text-white" />
             </button>
           </form>
-          {!session ? (
+          {status === "loading" && (
+            <div className="hidden md:flex">
+              <div className="h-6 w-28 bg-gray-200 rounded-xl mr-2 animate-pulse"></div>
+              <div className="h-6 w-12 bg-gray-200 rounded-xl mr-2 animate-pulse"></div>
+              {/* <div className="h-6 w-10 bg-gray-200 rounded-xl mr-2"></div> */}
+            </div>
+          )}
+          {status != "loading" && !session && (
             <>
               <a
                 href="/signup"
@@ -224,7 +231,8 @@ export default function Header() {
                 Log In
               </a>
             </>
-          ) : (
+          )}
+          {status != "loading" && session && (
             <>
               <span className="text-gray-700 hidden sm:block">
                 Hi, {session.user.username}

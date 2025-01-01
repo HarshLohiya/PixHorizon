@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function Abstract() {
   const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -16,6 +17,8 @@ export default function Abstract() {
         setImages(data);
       } catch (error) {
         console.error("Error fetching images:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -31,7 +34,21 @@ export default function Abstract() {
           Welcome to PixHorizon! We are passionate about capturing the beauty of
           nature through our lens.
         </p>
-        <MasonryGallery images={images} />
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="w-full h-80 bg-gray-300 animate-pulse rounded-lg"
+              ></div>
+            ))}
+          </div>
+        ) : (
+          <div className="fade-in">
+            <MasonryGallery images={images} />
+          </div>
+        )}
       </main>
       <Footer />
     </div>

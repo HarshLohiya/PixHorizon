@@ -54,7 +54,7 @@ export default function Home() {
                 alt="Image 1"
                 fill
                 style={{ objectFit: "cover" }}
-                quality={80}
+                quality={60}
                 onContextMenu={(e) => e.preventDefault()}
               />
             </div>
@@ -67,7 +67,7 @@ export default function Home() {
                 alt="Image 2"
                 fill
                 style={{ objectFit: "cover" }}
-                quality={80}
+                quality={60}
                 onContextMenu={(e) => e.preventDefault()}
               />
             </div>
@@ -80,7 +80,7 @@ export default function Home() {
                 alt="Image 3"
                 fill
                 style={{ objectFit: "cover" }}
-                quality={80}
+                quality={60}
                 onContextMenu={(e) => e.preventDefault()}
               />
             </div>

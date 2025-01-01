@@ -47,7 +47,6 @@ export default function Upload() {
       setMessage("Please add at least one tag.");
       return;
     }
-    
 
     // Create form data
     const formData = new FormData();
@@ -81,8 +80,7 @@ export default function Upload() {
     } catch (error) {
       console.error("Error uploading image:", error);
       setMessage("Failed to upload image.");
-    }
-    finally {
+    } finally {
       setIsUploadLoading(false);
     }
   };
@@ -91,122 +89,145 @@ export default function Upload() {
     window.location.reload();
   };
 
-  if (status === "loading") {
-    return <p>Loading...</p>; // Show loading while session is being fetched
-  }
+  // if (status === "loading") {
+  //   return <p>Loading...</p>; // Show loading while session is being fetched
+  // }
 
-  if (!session) {
-    return (
-      <div className="min-h-screen flex flex-col justify-between bg-green-200">
-        <Header />
-        <p className="mx-auto text-lg text-gray-700">
-          Please{" "}
-          <Link href="/login" className="text-blue-600 underline">
-            log in
-          </Link>{" "}
-          to upload the images.
-        </p>
-        <Footer />
-      </div>
-    );
-  }
+  // if (!session) {
+  //   return (
+  //     <div className="min-h-screen flex flex-col justify-between bg-green-200">
+  //       <Header />
+  //       <p className="mx-auto text-lg text-gray-700">
+  //         Please{" "}
+  //         <Link href="/login" className="text-blue-600 underline">
+  //           log in
+  //         </Link>{" "}
+  //         to upload the images.
+  //       </p>
+  //       <Footer />
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div className="bg-green-200 flex flex-col justify-between min-h-screen">
+    <div className="min-h-screen">
       <Header />
-      <div className="p-8 container mx-auto">
+      <div className="px-4 md:px-20 py-8 bg-green-200">
         <h1 className="text-2xl font-bold mb-4 text-black">Upload Image</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            required
-            className="block max-w-80 w-full text-black text-center p-2 border border-gray-400 rounded mt-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            required
-            onChange={handleTitleChange}
-            className="block mb-4 p-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <select
-            value={category}
-            onChange={handleCategoryChange}
-            required
-            className="block mb-4 p-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="" disabled>
-              Choose a category...
-            </option>
-            <option value="birds">Birds</option>
-            <option value="wildlife">Wildlife</option>
-            <option value="landscape">Landscape</option>
-            <option value="butterfly">Butterfly</option>
-            <option value="flowers">Flowers</option>
-            <option value="abstract">Abstract</option>
-          </select>
-
-          <textarea
-            value={description}
-            onChange={handleDescriptionChange}
-            required
-            className="w-full max-w-2xl p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Write a small description..."
-          />
-
-          <ReactTags
-            tags={tags}
-            handleDelete={handleDelete}
-            handleAddition={handleAddition}
-            autoFocus={false}
-            separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
-            required
-            placeholder="Add search tags"
-            classNames={{
-              tags: "-translate-y-3",
-              tagInputField:
-                "w-full max-w-xl p-2 border rounded-lg text-sm text-black mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
-              tag: "bg-blue-500 text-white p-1 text-sm rounded-lg mr-2",
-              remove: "ml-2 text-red-500 cursor-pointer",
-            }}
-          />
-
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-          >
-            Upload
-          </button>
-        </form>
-        {message && <p className="mt-4 text-black">* {message}</p>}
-
-        {/* Loading Dialog */}
-        {isUploadLoading && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-            <div className="bg-white p-6 rounded shadow-lg flex flex-col items-center text-black">
-              <div className="loader mb-4"></div> {/* Spinner */}
-              <p>
-                Almost there! Your photo is being uploaded to the gallery...
-              </p>
-            </div>
-          </div>
+        {status === "loading" && (
+          <>
+            <div className="h-10 w-7/12 md:w-3/12 bg-gray-200 rounded-xl mb-6 animate-pulse"></div>
+            <div className="h-10 w-6/12 md:w-2/12 bg-gray-200 rounded-xl mb-6 animate-pulse"></div>
+            <div className="h-8 w-5/12 md:w-3/12 bg-gray-200 rounded-xl mb-6 animate-pulse"></div>
+            <div className="h-16 w-full md:w-3/5 bg-gray-200 rounded-xl mb-6 animate-pulse"></div>
+            <div className="h-8 w-full md:w-2/5 bg-gray-200 rounded-xl mb-6 animate-pulse"></div>
+            <div className="h-10 w-3/12 md:w-1/12 bg-gray-200 rounded-xl mb-4 animate-pulse"></div>
+          </>
         )}
-
-        {/* Success Dialog */}
-        {isSuccessDialogOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
-            <div className="bg-white p-6 rounded shadow-lg text-center text-black">
-              <p>Upload complete! Your photo is now part of the gallery.</p>
-              <button
-                onClick={handleRefresh}
-                className="mt-4 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+        {status === "unauthenticated" && (
+          <p className="mx-auto text-lg text-gray-700 fade-in">
+            Please{" "}
+            <Link href="/login" className="text-blue-600 underline">
+              log in
+            </Link>{" "}
+            to upload the images.
+          </p>
+        )}
+        {status === "authenticated" && (
+          <div className="fade-in">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                required
+                className="block max-w-80 w-full text-black text-center p-2 border border-gray-400 rounded mt-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                required
+                onChange={handleTitleChange}
+                className="block mb-4 p-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <select
+                value={category}
+                onChange={handleCategoryChange}
+                required
+                className="block mb-4 p-2 border border-gray-300 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                OK
+                <option value="" disabled>
+                  Choose a category...
+                </option>
+                <option value="birds">Birds</option>
+                <option value="wildlife">Wildlife</option>
+                <option value="landscape">Landscape</option>
+                <option value="butterfly">Butterfly</option>
+                <option value="flowers">Flowers</option>
+                <option value="abstract">Abstract</option>
+              </select>
+
+              <textarea
+                value={description}
+                onChange={handleDescriptionChange}
+                required
+                className="w-full max-w-2xl p-3 border rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Write a small description..."
+              />
+
+              <ReactTags
+                tags={tags}
+                handleDelete={handleDelete}
+                handleAddition={handleAddition}
+                autoFocus={false}
+                separators={[SEPARATORS.ENTER, SEPARATORS.COMMA]}
+                required
+                placeholder="Add search tags"
+                classNames={{
+                  tags: "-translate-y-3",
+                  tagInputField:
+                    "w-full max-w-xl p-2 border rounded-lg text-sm text-black mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                  tag: "bg-blue-500 text-white p-1 text-sm rounded-lg mr-2",
+                  remove: "ml-2 text-red-500 cursor-pointer",
+                }}
+              />
+
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Upload
               </button>
-            </div>
+            </form>
+            {message && <p className="mt-4 text-black">* {message}</p>}
+
+            {/* Loading Dialog */}
+            {isUploadLoading && (
+              <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+                <div className="bg-white p-6 rounded shadow-lg flex flex-col items-center text-black">
+                  <div className="loader mb-4"></div> {/* Spinner */}
+                  <p>
+                    Almost there! Your photo is being uploaded to the gallery...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Success Dialog */}
+            {isSuccessDialogOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75 z-50">
+                <div className="bg-white p-6 rounded shadow-lg text-center text-black">
+                  <p>Upload complete! Your photo is now part of the gallery.</p>
+                  <button
+                    onClick={handleRefresh}
+                    className="mt-4 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
