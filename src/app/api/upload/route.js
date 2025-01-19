@@ -19,7 +19,7 @@ export async function POST(request) {
     const file = data.get("file");
     const title = data.get("title");
     const category = data.get("category");
-    const userEmail = data.get("userEmail")
+    const userEmail = data.get("userEmail");
     const description = data.get("description");
     const tags = data.getAll("tags");
 
@@ -33,21 +33,59 @@ export async function POST(request) {
     }
 
     // Convert file to buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    let buffer = Buffer.from(await file.arrayBuffer());
 
     // Resize and compress the image using sharp
-    const resizedBuffer = await sharp(buffer)
-      .resize(2048) // Resize to 2048px width, maintain aspect ratio
-      .jpeg({ quality: 70 }) // Compress to 70% quality as JPEG
+    const displayBuffer = await sharp(buffer)
+      .resize(2048)
+      .jpeg({ quality: 70 })
       .toBuffer();
 
+    const { width, height } = await sharp(buffer).metadata();
+    const aspectRatio = width / height;
+    const maxResolution = 25000000; // 25 MP
+
+    if (width * height > maxResolution) {
+      const newWidth = Math.sqrt(maxResolution * (aspectRatio - 0.1));
+
+      buffer = await sharp(buffer)
+        .resize(Math.trunc(newWidth))
+        .jpeg({ quality: 100 })
+        .toBuffer();
+    }
+
     // Upload to ImageKit
-    const uploadResponse = await new Promise((resolve, reject) => {
+    const uploadResponseDisplay = await new Promise((resolve, reject) => {
       imageKit.upload(
         {
-          file: resizedBuffer, // Use the resized and compressed buffer
+          file: displayBuffer,
           fileName: file.name,
-          folder: "your_folder_name", // optional
+          folder: "display_size",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          resolve(result);
+        }
+      );
+    });
+
+    const fileSizeInMB = buffer.length / (1024 * 1024);
+    if (fileSizeInMB > 35) {
+      throw new Error("File size too large");
+    }
+    else if (fileSizeInMB > 25) {
+      buffer = await sharp(buffer)
+        .resize(width)
+        .jpeg({ quality: 90 })
+        .toBuffer();
+    }
+
+    const uploadResponseOriginal = await new Promise((resolve, reject) => {
+      imageKit.upload(
+        {
+          file: buffer,
+          fileName: file.name,
+          folder: "original_size",
         },
         (error, result) => {
           if (error) reject(error);
@@ -58,13 +96,14 @@ export async function POST(request) {
 
     // Save image data to MongoDB
     const newImage = await Image.create({
-      src: uploadResponse.url, // ImageKit.io provides the URL directly
+      displaySrc: uploadResponseDisplay.url,
+      originalSrc: uploadResponseOriginal.url,
       title: title,
       category: category,
       description: description,
       tags: tags,
-      width: uploadResponse.width, // Assuming ImageKit.io provides width
-      height: uploadResponse.height, // Assuming ImageKit.io provides height
+      width: uploadResponseDisplay.width,
+      height: uploadResponseDisplay.height,
       like: 0,
       price: 25,
       user: user._id,

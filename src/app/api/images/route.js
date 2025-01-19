@@ -44,7 +44,7 @@ export async function GET(request) {
     // Format the images
     const formattedImages = images.map((image) => ({
       _id: image._id,
-      src: image.src,
+      src: image.displaySrc,
       title: image.title,
       category: image.category,
       width: image.width,

@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const ImageSchema = new mongoose.Schema(
   {
-    src: String,
+    displaySrc: String,
+    originalSrc: String,
     title: String,
     category: String,
     description: String,

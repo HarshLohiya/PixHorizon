@@ -40,7 +40,7 @@ export async function POST(req) {
     // Clear the cart after order is placed
     await Cart.deleteMany({ userId: session.user.id });
 
-    const downloadLinks = cartItems.map((item) => item.imageId.src);
+    const downloadLinks = cartItems.map((item) => item.imageId.originalSrc);
 
     await sendOrderConfirmationEmail(
       session.user.email,

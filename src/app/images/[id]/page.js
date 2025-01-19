@@ -193,7 +193,7 @@ export default function ImagePage() {
             >
               <div className="relative bg-black rounded-lg w-full">
                 <Image
-                  src={image.src}
+                  src={image.displaySrc}
                   alt={image.title}
                   width={image.width}
                   height={image.height}

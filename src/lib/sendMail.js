@@ -45,7 +45,7 @@ export const sendOrderConfirmationEmail = async (
           ${order.items
             .map(
               (item) =>
-                `<li><strong>${item.imageId.title}</strong> - <a href="${item.imageId.src}" target="_blank">Download Image</a></li>`
+                `<li><strong>${item.imageId.title}</strong> - <a href="${item.imageId.originalSrc}" target="_blank">Download Image</a></li>`
             )
             .join("")}
         </ul>

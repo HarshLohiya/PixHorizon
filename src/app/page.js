@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import React from "react";
 // import { Carousel } from "react-responsive-carousel";
-import { useRouter } from "next/navigation";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
@@ -20,15 +19,11 @@ import "swiper/css/scrollbar";
 import Link from "next/link";
 
 export default function Home() {
-  const router = useRouter();
-
   return (
     <div>
       <Header />
 
       <section className="w-full h-[300px] md:h-[83vh]">
-        {" "}
-        {/* 83vh is 5/6 of the screen height */}
         <Swiper
           style={{
             "--swiper-navigation-color": "#fff",
@@ -50,7 +45,7 @@ export default function Home() {
           <SwiperSlide>
             <div className="relative w-full h-[300px] md:h-[83vh]">
               <Image
-                src="/photo1.jpg"
+                src="/photo2.jpg"
                 alt="Image 1"
                 fill
                 style={{ objectFit: "cover" }}
@@ -63,7 +58,7 @@ export default function Home() {
           <SwiperSlide>
             <div className="relative w-full h-[300px] md:h-[83vh]">
               <Image
-                src="/photo2.jpg"
+                src="/photo4.jpg"
                 alt="Image 2"
                 fill
                 style={{ objectFit: "cover" }}

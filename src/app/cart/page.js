@@ -130,7 +130,7 @@ export default function CartPage() {
                 >
                   <Link href={`/images/${item.imageId._id}`}>
                     <Image
-                      src={item.imageId.src}
+                      src={item.imageId.displaySrc}
                       alt={item.imageId.title}
                       width={item.imageId.width}
                       height={item.imageId.height}

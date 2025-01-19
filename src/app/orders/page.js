@@ -116,7 +116,7 @@ export default function OrdersPage() {
                       <div className="relative aspect-[16/10] w-full">
                         <Link href={`/images/${item.imageId._id}`}>
                           <Image
-                            src={item.imageId.src}
+                            src={item.imageId.displaySrc}
                             alt={item.imageId.title}
                             layout="fill"
                             objectFit="cover"
