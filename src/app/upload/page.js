@@ -89,26 +89,6 @@ export default function Upload() {
     window.location.reload();
   };
 
-  // if (status === "loading") {
-  //   return <p>Loading...</p>; // Show loading while session is being fetched
-  // }
-
-  // if (!session) {
-  //   return (
-  //     <div className="min-h-screen flex flex-col justify-between bg-green-200">
-  //       <Header />
-  //       <p className="mx-auto text-lg text-gray-700">
-  //         Please{" "}
-  //         <Link href="/login" className="text-blue-600 underline">
-  //           log in
-  //         </Link>{" "}
-  //         to upload the images.
-  //       </p>
-  //       <Footer />
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="min-h-screen">
       <Header />

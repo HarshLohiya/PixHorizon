@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "src/app/api/**/route.js": {
+      "maxDuration": 15,
+      "maxRequestBodySize": "25mb"
+    }
+  }
+}
