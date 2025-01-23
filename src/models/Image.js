@@ -7,7 +7,7 @@ const ImageSchema = new mongoose.Schema(
     title: String,
     category: String,
     description: String,
-    tags: [{type: String}],
+    tags: {type: [String], index:true},
     width: Number,
     height: Number,
     views: { type: Number, default: 0 },

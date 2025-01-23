@@ -6,6 +6,13 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { WithContext as ReactTags, SEPARATORS } from "react-tag-input";
 import Link from "next/link";
+import ImageKit from "imagekit-javascript";
+// import sharp from "sharp";
+
+const imageKit = new ImageKit({
+  publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
+  urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT,
+});
 
 export default function Upload() {
   const { data: session, status } = useSession();
@@ -33,7 +40,13 @@ export default function Upload() {
   const handleDescriptionChange = (e) => setDescription(e.target.value);
 
   const handleDelete = (i) => setTags(tags.filter((tag, index) => index !== i));
-  const handleAddition = (tag) => setTags([...tags, tag]);
+  const handleAddition = (tag) => {
+    if (!tags.some((existingTag) => existingTag.text === tag.text)) {
+      setTags([...tags, tag]);
+    } else {
+      setMessage("Duplicate tags are not allowed.");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,19 +61,73 @@ export default function Upload() {
       return;
     }
 
+    if (!session?.user?.email) {
+      return;
+    }
+
+    let buffer = Buffer.from(await file.arrayBuffer());
+    
+    // Resize and compress the image using sharp
+    const displayBuffer = await sharp(buffer)
+      .resize(2048)
+      .jpeg({ quality: 70 })
+      .toBuffer();
+
+    const { width, height } = await sharp(buffer).metadata();
+    const aspectRatio = width / height;
+    const maxResolution = 25000000; // 25 MP
+
+    if (width * height > maxResolution) {
+      const newWidth = Math.sqrt(maxResolution * (aspectRatio - 0.1));
+
+      buffer = await sharp(buffer)
+        .resize(Math.trunc(newWidth))
+        .jpeg({ quality: 100 })
+        .toBuffer();
+    }
+
+    // Upload to ImageKit
+    const uploadResponseDisplay = imageKit.upload({
+      file: displayBuffer.toString("base64"),
+      fileName: file.name,
+      folder: "display_size",
+    });
+
+    const fileSizeInMB = buffer.length / (1024 * 1024);
+    if (fileSizeInMB > 30) {
+      throw new Error("File size too large");
+    }
+    else if (fileSizeInMB > 25) {
+      buffer = await sharp(buffer)
+        .resize(width)
+        .jpeg({ quality: 90 })
+        .toBuffer();
+    }
+
+    const uploadResponseOriginal = imageKit.upload({
+      file: buffer.toString("base64"),
+      fileName: file.name,
+      folder: "original_size",
+    });
+
+    const uploadedImageDisplay = uploadResponseDisplay?.result;
+    const uploadedImageOriginal = uploadResponseOriginal?.result;
+
+
     // Create form data
     const formData = new FormData();
-    formData.append("file", file);
+    // formData.append("file", file);/
+    formData.append("displaySrc", uploadedImageDisplay.url);
+    formData.append("originalSrc", uploadedImageOriginal.url);
     formData.append("title", title);
     formData.append("category", category);
     formData.append("description", description);
     tags.forEach((tag) => {
       formData.append("tags", tag.text); // Assuming tag is an object with a 'text' property
     }); // Convert tags to array of strings
-
-    if (session?.user?.email) {
-      formData.append("userEmail", session.user.email);
-    }
+    formData.append("width", uploadResponseDisplay.width);
+    formData.append("height", uploadResponseDisplay.height);
+    formData.append("userEmail", session.user.email);
 
     try {
       setIsUploadLoading(true);
