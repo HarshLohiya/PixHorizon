@@ -83,40 +83,13 @@ export default function Home() {
         </Swiper>
       </section>
 
-      {/* <section className="w-full h-[400px]">
-        <Carousel
-          showThumbs={false}
-          autoPlay
-          infiniteLoop
-          showStatus={false}
-          className="h-full"
-        >
-          <div>
-            <img
-              src="/photo1.jpg"
-              alt="Image 1"
-              className="w-full h-[400px] object-cover"
-            />
-          </div>
-          <div>
-            <img
-              src="/photo2.jpg"
-              alt="Image 2"
-              className="w-full h-[400px] object-cover"
-            />
-          </div>
-          <div>
-            <img
-              src="/photo3.jpg"
-              alt="Image 3"
-              className="w-full h-[400px] object-cover"
-            />
-          </div>
-        </Carousel>
-      </section> */}
-
       <section className="bg-green-200 bg-cover bg-center h-screen">
-        <div className="container mx-auto px-6 py-24 flex flex-col justify-center items-center text-center h-full">
+        <div className="container mx-auto px-6 py-20 flex flex-col justify-center items-center text-center h-full">
+          <img
+            src="/dp_harsh.jpg" // Replace with the actual path to your image
+            alt="Harsh Lohiya"
+            className="w-48 h-48 rounded-full object-cover mb-8"
+          />
           <h1 className="text-4xl md:text-5xl lg:text-6xl text-white font-bold">
             Harsh Lohiya
           </h1>

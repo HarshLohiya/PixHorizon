@@ -6,13 +6,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { WithContext as ReactTags, SEPARATORS } from "react-tag-input";
 import Link from "next/link";
-import ImageKit from "imagekit-javascript";
-// import sharp from "sharp";
-
-const imageKit = new ImageKit({
-  publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
-  urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT,
-});
+import pica from "pica";
 
 export default function Upload() {
   const { data: session, status } = useSession();
@@ -48,6 +42,15 @@ export default function Upload() {
     }
   };
 
+  function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -65,71 +68,136 @@ export default function Upload() {
       return;
     }
 
-    let buffer = Buffer.from(await file.arrayBuffer());
-    
-    // Resize and compress the image using sharp
-    const displayBuffer = await sharp(buffer)
-      .resize(2048)
-      .jpeg({ quality: 70 })
-      .toBuffer();
-
-    const { width, height } = await sharp(buffer).metadata();
-    const aspectRatio = width / height;
-    const maxResolution = 25000000; // 25 MP
-
-    if (width * height > maxResolution) {
-      const newWidth = Math.sqrt(maxResolution * (aspectRatio - 0.1));
-
-      buffer = await sharp(buffer)
-        .resize(Math.trunc(newWidth))
-        .jpeg({ quality: 100 })
-        .toBuffer();
-    }
-
-    // Upload to ImageKit
-    const uploadResponseDisplay = imageKit.upload({
-      file: displayBuffer.toString("base64"),
-      fileName: file.name,
-      folder: "display_size",
-    });
-
-    const fileSizeInMB = buffer.length / (1024 * 1024);
-    if (fileSizeInMB > 30) {
-      throw new Error("File size too large");
-    }
-    else if (fileSizeInMB > 25) {
-      buffer = await sharp(buffer)
-        .resize(width)
-        .jpeg({ quality: 90 })
-        .toBuffer();
-    }
-
-    const uploadResponseOriginal = imageKit.upload({
-      file: buffer.toString("base64"),
-      fileName: file.name,
-      folder: "original_size",
-    });
-
-    const uploadedImageDisplay = uploadResponseDisplay?.result;
-    const uploadedImageOriginal = uploadResponseOriginal?.result;
-
-
-    // Create form data
-    const formData = new FormData();
-    // formData.append("file", file);/
-    formData.append("displaySrc", uploadedImageDisplay.url);
-    formData.append("originalSrc", uploadedImageOriginal.url);
-    formData.append("title", title);
-    formData.append("category", category);
-    formData.append("description", description);
-    tags.forEach((tag) => {
-      formData.append("tags", tag.text); // Assuming tag is an object with a 'text' property
-    }); // Convert tags to array of strings
-    formData.append("width", uploadResponseDisplay.width);
-    formData.append("height", uploadResponseDisplay.height);
-    formData.append("userEmail", session.user.email);
-
     try {
+      setIsUploadLoading(true);
+
+      const picaInstance = pica();
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      await img.decode();
+
+      const { naturalWidth: width, naturalHeight: height } = img;
+      const aspectRatio = width / height;
+
+      // Display Resolution of Image
+      const canvas = document.createElement("canvas");
+      canvas.width = 2048;
+      canvas.height = Math.round(2048 / aspectRatio);
+      await picaInstance.resize(img, canvas);
+      const displayBlob = await picaInstance.toBlob(
+        canvas,
+        "image/jpeg",
+        0.7
+      );
+      const displayBase64 = await blobToBase64(displayBlob);
+
+      const authResponse1 = await fetch("/api/upload/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uploadPayload: {
+            fileName: file.name,
+            folder: "display_size",
+          },
+          expireIn: 3000,
+          publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
+        }),
+      });
+      var { token } = await authResponse1.json();
+
+      const displayImageFormData = new FormData();
+      displayImageFormData.append("file", displayBase64);
+      displayImageFormData.append("token", token);
+      displayImageFormData.append("fileName", file.name);
+      displayImageFormData.append("folder", "display_size");
+
+      // Upload Display Image to ImageKit
+      const uploadDisplayResponse = await fetch(
+        "https://upload.imagekit.io/api/v2/files/upload",
+        {
+          method: "POST",
+          body: displayImageFormData,
+        }
+      );
+
+      // Original Resolution of Image
+      const maxResolution = 25000000; // 25 MP
+      if (width * height > maxResolution) {
+        const newWidth = Math.sqrt(maxResolution * (aspectRatio - 0.1));
+        canvas.width = Math.trunc(newWidth);
+        canvas.height = Math.trunc(newWidth / aspectRatio);
+        await picaInstance.resize(img, canvas);
+      } else {
+        canvas.width = width;
+        canvas.height = height;
+        await picaInstance.resize(img, canvas);
+      }
+
+      var originalBlob = await picaInstance.toBlob(
+        canvas,
+        "image/jpeg",
+        1
+      );
+      const originalBuffer = await originalBlob.arrayBuffer();
+      const fileSizeMB = originalBuffer.byteLength / (1024 * 1024);
+
+      if (fileSizeMB > 30) {
+        throw new Error("File size too large");
+      } 
+      else if (fileSizeMB > 20) {
+        var originalBlob = await picaInstance.toBlob(canvas, "image/jpeg", 0.95);
+      }
+      const originalBase64 = await blobToBase64(originalBlob);
+
+      const authResponse2 = await fetch("/api/upload/auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uploadPayload: {
+            fileName: file.name,
+            folder: "original_size",
+          },
+          expireIn: 3000,
+          publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
+        }),
+      });
+      var { token } = await authResponse2.json();
+
+      const originalImageFormData = new FormData();
+      originalImageFormData.append("file", originalBase64);
+      originalImageFormData.append("token", token);
+      originalImageFormData.append("fileName", file.name);
+      originalImageFormData.append("folder", "original_size");
+
+      // Upload Original Image to ImageKit
+      const uploadOriginalResponse = await fetch(
+        "https://upload.imagekit.io/api/v2/files/upload",
+        {
+          method: "POST",
+          body: originalImageFormData,
+        }
+      );
+
+      const uploadedDisplayData = await uploadDisplayResponse.json();
+      const uploadedOriginalData = await uploadOriginalResponse.json();
+
+      const formData = new FormData();
+      formData.append("displaySrc", uploadedDisplayData.url);
+      formData.append("originalSrc", uploadedOriginalData.url);
+      formData.append("title", title);
+      formData.append("category", category);
+      formData.append("description", description);
+      tags.forEach((tag) => {
+        formData.append("tags", tag.text); // Assuming tag is an object with a 'text' property
+      }); // Convert tags to array of strings
+      formData.append("width", uploadedDisplayData.width);
+      formData.append("height", uploadedDisplayData.height);
+      formData.append("userEmail", session.user.email);
+
       setIsUploadLoading(true);
       const response = await fetch("/api/upload", {
         method: "POST",
